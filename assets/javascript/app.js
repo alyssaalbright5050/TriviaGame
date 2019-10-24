@@ -1,7 +1,10 @@
+//Make start button disapper
+
 $("#start").on("click", function() {
     $("#start").remove();
 });
 
+//Questions and Answers
 var questions = [{
     question: "Which dog is nicknamed 'The American Gentleman?",
     answers: ["Cockapoo", "Boston Terrier", "American Bulldog", "American Foxhound"],
@@ -37,6 +40,46 @@ var questions = [{
     //image:,
 }];
 
+//Functions
+var game = {
+    questions:questions,
+    currentQuestion:0,
+    counter:30,
+    correct:0,
+    inccorect:0,
+    countdown: function() {
+        game.counter--;
+        $("#counter").html(game.counter);
+        if(game.counter <= 0) {
+            console.log("Time Up!");
+            game.timeUp();
+        }
+    },
+    loadQuestion: function() {
+        timer = setInterval(game.countdown, 1000);
+        $("#subwrapper").html("<h2>" + question[game.currentQuestion].question+"</h2>");
+    },
+    nextQuestion: function() {
+
+    },
+    timeUp: function() {
+
+    },
+    results: function() {
+
+    },
+    clicked: function() {
+
+    },
+    answeredCorrectly: function() {
+
+    },
+    answeredIncorrectly: function() {
+
+    },
+    reset: function()  {
+
+    },
 
 
 
@@ -47,9 +90,4 @@ var questions = [{
 
 
 
-
-
-
-
-
-
+};
