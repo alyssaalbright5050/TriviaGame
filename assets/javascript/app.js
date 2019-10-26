@@ -1,93 +1,171 @@
-//Make start button disapper
-
-$("#start").on("click", function() {
-    $("#start").remove();
-});
-
-//Questions and Answers
 var questions = [{
-    question: "Which dog is nicknamed 'The American Gentleman?",
-    answers: ["Cockapoo", "Boston Terrier", "American Bulldog", "American Foxhound"],
-    correctAnswer: "Boston Terrier",
-    //image: ,
-    question: "Which group does the Boston Terrier belong to, according to the American Kennel Club?",
-    answers: ["The Sporting Group", "The Working Group", "The Toy Group", "The Non-Sporting Group"],
-    correctAnswer: "The Non-Sporting Group",
-    //image: ,
-    question: "What year did the Boston Terrier originate?",
-    answers: ["1870", "1970", "1950", "1850"],
-    correctAnswer: "1850",
-    //image: ,
-    question: "Which was the first American breed to be recognized by the American Kennel Club?",
-    answers: ["Alasakan Malamute", "American Bulldog", "Boston Terrier", "American Foxhound"],
-    correctAnswer: "Boston Terrier",
-    //image: ,
-    question: "Where did the Boston Terrier originate?",
-    answers: ["Scotland", "United States", "Ireland", "England"],
-    correctAnswer: "United States",
-    //image:,
-    question: "What breed of dog is the cross-breed of an English Bulldog and a white English Terrier?",
-    answers: ["Bull Terrier", "Bulldog Terrier", "English Bulldog Terrier", "Boston Terrier"],
-    correctAnswer: "Boston Terrier",
-    //image: ,
-    question: "In what year did the American Kennel Club admit the Boston Terrier?",
-    answers: ["1893", "1975", "1875", "1993"],
-    correctAnswer: "1893",
-    //image: ,
-    question: "What is the average life expectancy of a Boston Terrier?",
-    answers: ["9-13 years", "10-14 years", "11-15 years", "12-16 years"],
-    correctAnswer: "10-14 years"
-    //image:,
+    question: "Where did Halloween originate?",
+    answers: ["Ireland", "Transylvania", "Africa"],
+    correctAnswer: "Ireland",
+    image: "<img src='assets/images/Ireland.png' />"
+
+}, {
+    question: "How do pumpkins grow?",
+    answers: ["Vine", "Tree", "Underground"],
+    correctAnswer: "Vine",
+    image: "<img src='assets/images/pumpkin.png' />"
+
+}, {
+    question: "Which country celebrates 'Day of the Dead'?",
+    answers: ["Mexico", "America", "China"],
+    correctAnswer: "Mexico",
+    image: "<img src='assets/images/Day of the dead.png' />"
+
+}, {
+    question: "Which candy is the second most popular Halloween candy?",
+    answers: ["Candy Corn", "Snickers", "Peeps"],
+    correctAnswer: "Candy Corn",
+    image: "<img src='assets/images/candycorn.png' />"
+
+}, {
+    question: "What were the original Halloween costumes made from?",
+    answers: ["lace", "animal heads and skin", "plastic"],
+    correctAnswer: "animal heads and skin",
+    image: "<img src='assets/images/costume.png' />"
+
+
+
 }];
 
-//Functions
+//Game object and properties.......................................
 var game = {
-    questions:questions,
-    currentQuestion:0,
-    counter:30,
-    correct:0,
-    inccorect:0,
-    countdown: function() {
+    questions: questions,
+    currentQuestion: 0,
+    counter: 10, //game counter
+    correct: 0, //tracks correct reponses
+    incorrect: 0, //tracks incorrect reponses
+    unanswered: 0, //tracks unanswered questions
+
+    //gane functions...................................................
+    countDown: function () { //changing the timer
         game.counter--;
-        $("#counter").html(game.counter);
-        if(game.counter <= 0) {
-            console.log("Time Up!");
+        $('#counter').html(game.counter);
+
+        if (game.counter == 5) {
+            $('#subwrapper').append("<audio autoplay src='assets/sounds/smb_warning.wav'></audio>");
+        }
+        else if (game.counter <= 0) {
+            $('#counter').html("time up!");
             game.timeUp();
         }
     },
-    loadQuestion: function() {
-        timer = setInterval(game.countdown, 1000);
-        $("#subwrapper").html("<h2>" + question[game.currentQuestion].question+"</h2>");
-    },
-    nextQuestion: function() {
+    loadQuestion: function () {    //loads question and multiple choice answers on page
+        timer = setInterval(this.countDown, 1000);  //lowers counter on page per second
+        $('#subwrapper').html('<h2>Time Left: <span id="counter">10</span> Seconds!</h2>');
+        $('#subwrapper').append('<h2>' + questions[game.currentQuestion].question + '</h2>');
+
+        for (var i = 0; i < questions[game.currentQuestion].answers.length; i++) { //loops through array of available questions
+
+            $('#subwrapper').append('<button class="answer-button"id="button-' + i + '" data-name="' + questions[game.currentQuestion].answers[i] + '">' + questions[game.currentQuestion].answers[i] + '</button>');
+
+        }
 
     },
-    timeUp: function() {
+    nextQuestion: function () {  //LOADS next question
+        game.counter = 10;       //SETS timer back to 10 mins
+        $("#counter").html(game.counter);  //display counter to html
+        game.currentQuestion++;           // loops to next question with ++
+        game.loadQuestion();             //runs function load question 
 
     },
-    results: function() {
+    timeUp: function () {
+        clearInterval(timer); //timer stops, avoids going into the negative
+        game.unanswered++;
+        $("#subwrapper").html("<h1>OUT OF TIME!</h1>")
+        $('#subwrapper').append("<audio autoplay src='assets/sounds/smb_gameover.wav'></audio>");
+        $("#subwrapper").append('<h3>The Correct Response Was:' + questions[game.currentQuestion].correctAnswer + ' </h3>');
+        $("#subwrapper").append('<span>' + questions[game.currentQuestion].image + '</span>');
+        if (game.currentQuestion == questions.length - 1) {
+            setTimeout(game.results, 3 * 1000);
+        } else {
+            setTimeout(game.nextQuestion, 3 * 1000);
+        }
 
     },
-    clicked: function() {
+    results: function () {
+        clearInterval(timer);
+        $("#subwrapper").html('<h1>Game Complete!</h1>');
+        $("#subwrapper").append('<h2>CORRECT: ' + game.correct + '</h2>');
+        $("#subwrapper").append('<h2>INCORRECT: ' + game.incorrect + '</h2>');
+        $("#subwrapper").append('<h2>UNANSWERED: ' + game.unanswered + '</h2>');
+        $("#subwrapper").append("<button id='reset'>RESET</button>"); //adds button to results page to reset game
+
+
 
     },
-    answeredCorrectly: function() {
+    clicked: function (value) { // will clear time
+        clearInterval(timer);
+        if (value == questions[game.currentQuestion].correctAnswer) {
+            game.answeredCorrectly();
+        } else {
+            game.answeredIncorrectly();
+        }
 
     },
-    answeredIncorrectly: function() {
+    answeredCorrectly: function () { // will generate win in html
+        clearInterval(timer);          //clears timer upon guess
+        game.correct++;                //adds to correct counter value array
+        $("#subwrapper").html('<h1>Right Answer! </h1>') //will display in "Right Answer!"
+        $("#subwrapper").append('<span>' + questions[game.currentQuestion].image + '</span>');
+        $('#subwrapper').append("<audio autoplay src='assets/sounds/smb_1-up.wav'></audio>");
+
+        if (game.currentQuestion == questions.length - 1) {
+            setTimeout(game.results, 3 * 1000);
+        } else {
+            setTimeout(game.nextQuestion, 3 * 1000);
+        }
+        //testing/debugging
+        console.log("RIGHT ON!");
+    },
+    answeredIncorrectly: function () { //will generate win html
+        clearInterval(timer);          //clears timer upon guess
+        game.incorrect++;                //adds to correct counter value array
+        $("#subwrapper").html('<h1>Wrong Answer! </h1>') //will display in "Wrong Answer!"
+        $("#subwrapper").append('<h3>The Correct Response Was:  ' + questions[game.currentQuestion].correctAnswer + ' </h3>');
+        $("#subwrapper").append('<span>' + questions[game.currentQuestion].image + '</span>');
+        $('#subwrapper').append("<audio autoplay src='assets/sounds/smb_mariodie.wav'></audio>");
+
+        if (game.currentQuestion == questions.length - 1) {
+            setTimeout(game.results, 3 * 1000);
+        } else {
+            setTimeout(game.nextQuestion, 3 * 1000);
+        }
+        //testing/debugging
+        console.log("TRY AGAIN!");
 
     },
-    reset: function()  {
+    reset: function () {
+        game.currentQuestion = 0;
+        game.counter = 10;
+        game.correct = 0;
+        game.incorrect = 0;
+        game.unanswered = 0;
+        game.loadQuestion();
+        $('#subwrapper').append("<audio autoplay src='assets/sounds/smb_powerup.wav'></audio>");
 
-    },
+    }
+}
 
 
+//REMOVES "start" button from page..................................
+$('#start').on('click', function () {
+    $('#start').remove();
+    game.loadQuestion();
+})
+
+///CHECKS entire document on load for '.answer-button' that is not on page. "e" is used to store an event
+$(document).on('click', '.answer-button', function () {
+    var value = $(this).attr("data-name");
+    game.clicked(value);
 
 
+})
+$(document).on('click', '#reset', function () {
+    game.reset();
+})
 
-
-
-
-
-
-};
